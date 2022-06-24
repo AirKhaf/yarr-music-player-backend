@@ -1,0 +1,37 @@
+version: "3"
+services:
+  postgres-db:
+    image: postgres:14
+    volumes:
+      - ./postgres/:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "yarr-music"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "yarr-db"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+    networks:
+      - postgres
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:5.7
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "default@mail.com"
+      PGADMIN_DEFAULT_PASSWORD: "password"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./postgres/pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    networks:
+      - postgres
+    links:
+      - postgres-db
+
+networks:
+  postgres:
+    driver: bridge
